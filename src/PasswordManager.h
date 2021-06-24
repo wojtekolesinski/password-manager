@@ -8,9 +8,15 @@ private:
 
 public:
     void addPassword(string password);
+    void addPassword();
+    void deletePassword(int index);
     void showPasswords();
-    void addCategory(string category);
+    bool addCategory(string category);
+    void addCategory();
+    void deleteCategory(int index);
     const vector<string> &getCategories() const;
+    const util::List &getPasswords() const;
     void filterByCategory(int index);
+    void sortPasswords(int sort);
 };
 

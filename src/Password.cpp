@@ -4,6 +4,8 @@ Password::Password(const string &name, const string &password, const string &cat
                                                                                                    password(password),
                                                                                                    category(
                                                                                                            category) {}
+
+
 const string &Password::getName() const {
     return name;
 }
