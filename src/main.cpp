@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <ctime>
 #include "utils.h"
 #include "PasswordManager.h"
 
@@ -75,35 +74,16 @@ int getPassword(PasswordManager passwordManager) {
 int main(int argc, char *argv[]) {
     using std::cout, std::cin, std::endl;
 
-    PasswordManager MANAGER = PasswordManager();
 
     string path = argv[1];
-    std::ifstream file(path);
-
-    string password, input;
-    std::getline(file, password);
-    do {
-        cout << "enter password:" << endl;
-        cin >> input;
-    } while (!util::authenticate(password, input));
-
-    cout << "CORRECT!" << endl;
-    long timestamp;
-    file >> timestamp;
-    cout << "Last successful login: " << std::ctime(&timestamp);
-
-    string line;
-    std::getline(file, line);
-    while (std::getline(file, line)) {
-        MANAGER.addPassword(line);
-    }
-
-    MANAGER.showPasswords();
+    PasswordManager MANAGER = PasswordManager(path);
+    MANAGER.load();
 
     int choice;
     while (true) {
         switch (getChoice()) {
             case Exit:
+                MANAGER.shutDown();
                 return 0;
             case FilterByCategory:
                 choice = getCategory(MANAGER);
@@ -137,10 +117,4 @@ int main(int argc, char *argv[]) {
     }
 
 }
-/*
-int main() {
 
-    std::cout << util::parseDelimited("main;JKLMNOPRS;private", ";", 0) << std::endl;
-    std::cout << util::parseDelimited("main;JKLMNOPRS;private", ";", 1) << std::endl;
-    std::cout << util::parseDelimited("main;JKLMNOPRS;private", ";", 2) << std::endl;
-}*/

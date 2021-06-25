@@ -1,5 +1,7 @@
 #include "PasswordManager.h"
 #include <iostream>
+#include <ctime>
+#include <fstream>
 
 void PasswordManager::addPassword(string input) {
     string name = util::parseDelimited(input, ";", 0);
@@ -8,7 +10,6 @@ void PasswordManager::addPassword(string input) {
 
     password = util::decode(password);
     addCategory(category);
-
     PasswordManager::passwords.add(new Password(name, password, category));
 }
 
@@ -89,4 +90,42 @@ void PasswordManager::sortPasswords(int sort) {
 
 const util::List &PasswordManager::getPasswords() const {
     return passwords;
+}
+
+PasswordManager::PasswordManager(const string &path) : path(path) {}
+
+void PasswordManager::load() {
+    using std::cout, std::cin, std::endl;
+
+    std::ifstream file(path);
+
+    string password, input;
+    std::getline(file, password);
+    do {
+        cout << "enter password:" << endl;
+        cin >> input;
+    } while (!util::authenticate(password, input));
+
+    masterPassword = password;
+    cout << "CORRECT!" << endl;
+    long timestamp;
+    file >> timestamp;
+    cout << "Last successful login: " << std::ctime(&timestamp);
+
+    string line;
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        addPassword(line);
+    }
+}
+
+void PasswordManager::shutDown() {
+    std::ofstream file;
+    file.open(path, std::ofstream::trunc | std::ofstream::in);
+    file << masterPassword << std::endl;
+    file << std::time(0) << std::endl;
+    file.close();
+
+    passwords.getAsStream(path);
+
 }

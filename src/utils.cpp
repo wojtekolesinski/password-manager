@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <iostream>
+#include <fstream>
 
 string util::decode(const string &password) {
     string result = "";
@@ -43,49 +44,10 @@ string util::parseDelimited(string input, string delimiter, int index) {
 
 }
 
-void util::addSorted(Node*& head, Password data, int arg) {
-
-    if (head == nullptr) {
-        head = new Node {data, nullptr};
-        return;
-    }
-    Node* next = head;
-    Node* previous = nullptr;
-    if (arg == 1) {
-        if (head->data.getName() > data.getName()) {
-            head = new Node{data, next};
-            return;
-        }
-        while (next) {
-            if (next->data.getName() > data.getName()) {
-                previous->next = new Node{data, next};
-                return;
-            }
-            previous = next;
-            next = next->next;
-        }
-    } else {
-        if (head->data.getCategory() > data.getCategory()) {
-            head = new Node{data, next};
-            return;
-        }
-        while (next) {
-            if (next->data.getCategory() > data.getCategory()) {
-                previous->next = new Node{data, next};
-                return;
-            }
-            previous = next;
-            next = next->next;
-        }
-    }
-    previous->next = new Node{data, nullptr};
-
-}
-
-util::List::List() {}
+util::List::List() {head = nullptr;}
 
 void util::List::add(Password* data) {
-    if (!head) {
+    if (head == nullptr) {
         head = new Node{*data, nullptr};
         return;
     }
@@ -169,31 +131,47 @@ void util::List::showFiltered(string filter) {
     }
 }
 
+
 void util::List::sort(int arg) {
-    // TODO
-    Node* newHead = head;
-    Node* nextNode = head;
+    if (head == nullptr || head->next == nullptr) return;
 
-    while (nextNode->next) {
-        if (arg == 1) {
-            if (nextNode->data.getName() < newHead->data.getName()) {
-                Node* temp = newHead;
-                newHead = nextNode;
-                newHead->next = temp;
-                continue;
-            }
-            Node* previous = newHead;
-            Node* innerNext = newHead->next;
-            while (innerNext) {
-                if (nextNode->data.getName() < innerNext->data.getName()) {
-                    previous->next = nextNode;
+    bool sorted;
+    do {
+        sorted = true;
+        Node* nextNode = head;
+        while (nextNode->next != nullptr) {
+            if ((arg == 1 && nextNode->data.getName() > nextNode->next->data.getName()) ||
+                (arg == 2 && nextNode->data.getCategory() > nextNode->next->data.getCategory())) {
+                string tempName, tempPass, tempCat;
+                tempName = nextNode->data.getName();
+                tempPass = nextNode->data.getPassword();
+                tempCat = nextNode->data.getCategory();
 
-                }
+                nextNode->data.setName(nextNode->next->data.getName());
+                nextNode->data.setPassword(nextNode->next->data.getPassword());
+                nextNode->data.setCategory(nextNode->next->data.getCategory());
+
+                nextNode->next->data.setName(tempName);
+                nextNode->next->data.setPassword(tempPass);
+                nextNode->next->data.setCategory(tempCat);
+                sorted = false;
             }
+            nextNode = nextNode->next;
         }
+    } while (!sorted);
+}
 
+void util::List::getAsStream(string path) {
+    std::ofstream file;
+    file.open(path, std::ofstream::app);
+
+    Node* nextNode = head;
+    while (nextNode) {
+        file << nextNode->data.getName() + ";"
+        << util::encode(nextNode->data.getPassword()) + ";"
+        << nextNode->data.getCategory()
+        << std::endl;
         nextNode = nextNode->next;
     }
-
-    head = newHead;
+    file.close();
 }

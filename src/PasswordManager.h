@@ -5,8 +5,11 @@ class PasswordManager {
 private:
     util::List passwords;
     vector<string> categories;
+    string path;
+    string masterPassword;
 
 public:
+    PasswordManager(const string &path);
     void addPassword(string password);
     void addPassword();
     void deletePassword(int index);
@@ -18,5 +21,7 @@ public:
     const util::List &getPasswords() const;
     void filterByCategory(int index);
     void sortPasswords(int sort);
+    void load();
+    void shutDown();
 };
 

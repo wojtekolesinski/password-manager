@@ -12,8 +12,6 @@ namespace util {
         Node* next;
     };
 
-    void addSorted(Node*& head, Password data, int arg);
-
     class List {
     public:
         List();
@@ -24,6 +22,7 @@ namespace util {
         void show();
         void showFiltered(string filter);
         void sort(int arg);
+        void getAsStream(string path);
     private:
         Node* head;
     };
